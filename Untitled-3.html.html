@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Warfare Decision Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1e3c72;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .model-display {
+            display: flex;
+            padding: 30px;
+            background: #f5f7fa;
+            gap: 20px;
+        }
+        
+        .column {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .column-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1e3c72;
+        }
+        
+        .condition-item {
+            background: #e74c3c;
+            color: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .condition-item:hover {
+            transform: translateX(-5px);
+        }
+        
+        .layer-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 5px solid;
+        }
+        
+        .layer-1 { border-left-color: #e74c3c; }
+        .layer-2 { border-left-color: #f39c12; }
+        .layer-3 { border-left-color: #27ae60; }
+        
+        .layer-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .mechanism-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .core-box {
+            background: #f1c40f;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .outcome-box {
+            background: #27ae60;
+            color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .value-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 24px;
+            color: #1e3c72;
+            margin: 10px 0;
+        }
+        
+        .control-panel {
+            padding: 30px;
+            background: white;
+        }
+        
+        .panel-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-selector {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #1e3c72;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s;
+        }
+        
+        .button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        
+        .button-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: #2a5298;
+        }
+        
+        .button-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .button-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .insights-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #1e3c72;
+        }
+        
+        .insight-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .footer {
+            background: #1e3c72;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .model-display {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Cognitive Warfare Decision Model</h1>
+            <p>Integrated Cognitive Mechanisms in Managerial Decision-Making</p>
+        </div>
+        
+        <!-- Model Visualization -->
+        <div class="model-display">
+            <!-- Left Column: Conditions -->
+            <div class="column">
+                <div class="column-title">⚡ CAUSAL CONDITIONS</div>
+                <div class="condition-item" onclick="highlightLayer('cognitive')">⚔️ Cognitive Warfare</div>
+                <div class="condition-item" onclick="highlightLayer('perceptual')">👁️ Perceptual Threat</div>
+                <div class="condition-item" onclick="highlightLayer('info')">📊 Information Flow</div>
+                <div class="condition-item" onclick="highlightLayer('env')">🌪️ Environmental Turbulence</div>
+                <div class="arrow">↓</div>
+            </div>
+            
+            <!-- Middle Column: Mechanisms -->
+            <div class="column">
+                <div class="column-title">🧠 COGNITIVE MECHANISMS</div>
+                
+                <div class="layer-box layer-1" id="layer1">
+                    <div class="layer-title">📡 Layer 1: Perceptual-Cognitive</div>
+                    <div class="mechanism-row">
+                        <span>Information Processing</span>
+                        <span id="infoProcessing" class="value">65</span>
+                    </div>
+                    <div class="mechanism-row">
+                        <span>Perceptual Sensitivity</span>
+                        <span id="perceptualSensitivity" class="value">70</span>
+                    </div>
+                </div>
+                
+                <div class="layer-box layer-2" id="layer2">
+                    <div class="layer-title">📚 Layer 2: Semantic-Narrative</div>
+                    <div class="mechanism-row">
+                        <span>Situational Reframing</span>
+                        <span id="reframing" class="value">60</span>
+                    </div>
+                    <div class="mechanism-row">
+                        <span>Mental Framing</span>
+                        <span id="framing" class="value">68</span>
+                    </div>
+                </div>
+                
+                <div class="layer-box layer-3" id="layer3">
+                    <div class="layer-title">⚡ Layer 3: Action-Strategic</div>
+                    <div class="mechanism-row">
+                        <span>Option Selection</span>
+                        <span id="optionSelection" class="value">72</span>
+                    </div>
+                    <div class="mechanism-row">
+                        <span>Rapid Decision</span>
+                        <span id="rapidDecision" class="value">58</span>
+                    </div>
+                </div>
+                
+                <div class="core-box" id="coreBox">
+                    <div>⚙️ Cognitive Regulation Capacity</div>
+                    <div style="font-size: 22px; margin-top: 5px;" id="regulationCapacity">66</div>
+                </div>
+                
+                <div class="arrow">↓</div>
+            </div>
+            
+            <!-- Right Column: Outcomes -->
+            <div class="column">
+                <div class="column-title">🎯 DECISION OUTCOMES</div>
+                
+                <div class="outcome-box" id="accuracyBox">
+                    <div>📊 Decision Accuracy</div>
+                    <div class="value-display" id="decisionAccuracy">72</div>
+                </div>
+                
+                <div class="outcome-box" id="resilienceBox">
+                    <div>🛡️ Managerial Resilience</div>
+                    <div class="value-display" id="managerialResilience">68</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="panel-title">🎮 Interactive Simulation</div>
+            
+            <select class="scenario-selector" id="scenario">
+                <option value="base">Baseline Scenario</option>
+                <option value="high">Full-Scale Cognitive Warfare</option>
+                <option value="info">Information Overload</option>
+                <option value="time">Time-Critical Crisis</option>
+                <option value="threat">High Perceptual Threat</option>
+                <option value="narrative">Multi-Narrative Environment</option>
+            </select>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div>🌍 Environmental Pressure</div>
+                    <div class="stat-value" id="envPressure">45</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="pressureBar" style="width: 45%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div>🧠 Cognitive Load</div>
+                    <div class="stat-value" id="cognitiveLoad">52</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="loadBar" style="width: 52%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div>⚡ Stress Level</div>
+                    <div class="stat-value" id="stressLevel">48</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="stressBar" style="width: 48%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="button button-primary" onclick="runSimulation()">🔄 Run Simulation</button>
+            <button class="button button-secondary" onclick="resetSimulation()">⟲ Reset to Default</button>
+            
+            <div class="insights-box" id="insights">
+                <div style="font-weight: bold; margin-bottom: 10px;">💡 Key Insights</div>
+                <div class="insight-item">• Balanced cognitive performance across layers</div>
+                <div class="insight-item">• Good decision accuracy potential</div>
+                <div class="insight-item">• Consider narrative processing strategies</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Cognitive Warfare Decision Model | Based on empirical research</p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple simulation without classes
+        let managerData = {
+            experience: 12,
+            flexibility: 65,
+            stressTolerance: 70,
+            
+            // Layer 1
+            infoProcessing: 65,
+            perceptualSensitivity: 70,
+            
+            // Layer 2
+            reframing: 60,
+            framing: 68,
+            
+            // Layer 3
+            optionSelection: 72,
+            rapidDecision: 58,
+            
+            // Core
+            regulationCapacity: 0,
+            
+            // Outcomes
+            decisionAccuracy: 0,
+            managerialResilience: 0,
+            
+            // Stats
+            envPressure: 45,
+            cognitiveLoad: 52,
+            stressLevel: 48
+        };
+        
+        // Scenario definitions
+        const scenarios = {
+            base: { pressure: 40, load: 45, stress: 42 },
+            high: { pressure: 85, load: 88, stress: 82 },
+            info: { pressure: 75, load: 95, stress: 70 },
+            time: { pressure: 82, load: 78, stress: 88 },
+            threat: { pressure: 88, load: 72, stress: 85 },
+            narrative: { pressure: 78, load: 82, stress: 75 }
+        };
+        
+        // Update all displays
+        function updateDisplay() {
+            // Update layer values
+            document.getElementById('infoProcessing').textContent = managerData.infoProcessing;
+            document.getElementById('perceptualSensitivity').textContent = managerData.perceptualSensitivity;
+            document.getElementById('reframing').textContent = managerData.reframing;
+            document.getElementById('framing').textContent = managerData.framing;
+            document.getElementById('optionSelection').textContent = managerData.optionSelection;
+            document.getElementById('rapidDecision').textContent = managerData.rapidDecision;
+            
+            // Calculate regulation capacity (core)
+            managerData.regulationCapacity = Math.round(
+                (managerData.infoProcessing * 0.3 +
+                 managerData.perceptualSensitivity * 0.3 +
+                 managerData.reframing * 0.2 +
+                 managerData.framing * 0.2 +
+                 managerData.optionSelection * 0.3 +
+                 managerData.rapidDecision * 0.2) / 1.5
+            );
+            document.getElementById('regulationCapacity').textContent = managerData.regulationCapacity;
+            
+            // Calculate outcomes based on pressure
+            const pressureEffect = managerData.envPressure / 100;
+            const regulationEffect = managerData.regulationCapacity / 100;
+            
+            managerData.decisionAccuracy = Math.round(
+                (managerData.infoProcessing * 0.25 +
+                 managerData.perceptualSensitivity * 0.25 +
+                 managerData.reframing * 0.2 +
+                 managerData.optionSelection * 0.3) * 
+                (0.7 + 0.3 * regulationEffect) * (1 - 0.2 * pressureEffect)
+            );
+            
+            managerData.managerialResilience = Math.round(
+                managerData.regulationCapacity * (1 - 0.2 * pressureEffect)
+            );
+            
+            document.getElementById('decisionAccuracy').textContent = managerData.decisionAccuracy;
+            document.getElementById('managerialResilience').textContent = managerData.managerialResilience;
+            
+            // Update stats
+            document.getElementById('envPressure').textContent = managerData.envPressure;
+            document.getElementById('cognitiveLoad').textContent = managerData.cognitiveLoad;
+            document.getElementById('stressLevel').textContent = managerData.stressLevel;
+            
+            // Update progress bars
+            document.getElementById('pressureBar').style.width = managerData.envPressure + '%';
+            document.getElementById('loadBar').style.width = managerData.cognitiveLoad + '%';
+            document.getElementById('stressBar').style.width = managerData.stressLevel + '%';
+            
+            // Update insights
+            updateInsights();
+        }
+        
+        // Run simulation
+        function runSimulation() {
+            const scenario = document.getElementById('scenario').value;
+            const scenarioData = scenarios[scenario];
+            
+            // Apply scenario effects
+            managerData.envPressure = scenarioData.pressure;
+            managerData.cognitiveLoad = scenarioData.load;
+            managerData.stressLevel = scenarioData.stress;
+            
+            // Add some random variation
+            managerData.infoProcessing = Math.min(100, Math.max(30, 65 + (Math.random() * 20 - 10)));
+            managerData.perceptualSensitivity = Math.min(100, Math.max(30, 70 + (Math.random() * 20 - 10)));
+            managerData.reframing = Math.min(100, Math.max(30, 60 + (Math.random() * 20 - 10)));
+            managerData.framing = Math.min(100, Math.max(30, 68 + (Math.random() * 20 - 10)));
+            managerData.optionSelection = Math.min(100, Math.max(30, 72 + (Math.random() * 20 - 10)));
+            managerData.rapidDecision = Math.min(100, Math.max(30, 58 + (Math.random() * 20 - 10)));
+            
+            updateDisplay();
+        }
+        
+        // Reset to default
+        function resetSimulation() {
+            managerData = {
+                experience: 12,
+                flexibility: 65,
+                stressTolerance: 70,
+                infoProcessing: 65,
+                perceptualSensitivity: 70,
+                reframing: 60,
+                framing: 68,
+                optionSelection: 72,
+                rapidDecision: 58,
+                regulationCapacity: 0,
+                decisionAccuracy: 0,
+                managerialResilience: 0,
+                envPressure: 45,
+                cognitiveLoad: 52,
+                stressLevel: 48
+            };
+            
+            document.getElementById('scenario').value = 'base';
+            updateDisplay();
+        }
+        
+        // Update insights based on values
+        function updateInsights() {
+            const insights = [];
+            
+            if (managerData.decisionAccuracy > 80) {
+                insights.push("• Excellent decision accuracy - Optimal performance");
+            } else if (managerData.decisionAccuracy > 60) {
+                insights.push("• Good decision accuracy - Stable cognitive processing");
+            } else {
+                insights.push("• Low decision accuracy - Consider cognitive support");
+            }
+            
+            if (managerData.regulationCapacity > 70) {
+                insights.push("• Strong cognitive regulation - Resilient decision-maker");
+            } else if (managerData.regulationCapacity < 40) {
+                insights.push("• Weak cognitive regulation - Training recommended");
+            }
+            
+            if (managerData.envPressure > 80) {
+                insights.push("• High environmental pressure - Risk of cognitive errors");
+            }
+            
+            if (managerData.cognitiveLoad > 80) {
+                insights.push("• Information overload detected - Need prioritization");
+            }
+            
+            if (managerData.stressLevel > 80) {
+                insights.push("• Critical stress level - Decision quality at risk");
+            }
+            
+            // Add default insight if none
+            if (insights.length === 0) {
+                insights.push("• Balanced cognitive performance");
+                insights.push("• Stable decision-making environment");
+            }
+            
+            // Update insights box
+            const insightsHtml = insights.map(i => `<div class="insight-item">${i}</div>`).join('');
+            document.getElementById('insights').innerHTML = 
+                '<div style="font-weight: bold; margin-bottom: 10px;">💡 Key Insights</div>' + insightsHtml;
+        }
+        
+        // Highlight layers
+        function highlightLayer(layer) {
+            document.getElementById('layer1').style.transform = 'scale(1)';
+            document.getElementById('layer2').style.transform = 'scale(1)';
+            document.getElementById('layer3').style.transform = 'scale(1)';
+            
+            if (layer === 'perceptual') {
+                document.getElementById('layer1').style.transform = 'scale(1.02)';
+                document.getElementById('layer1').style.backgroundColor = '#fff3f3';
+            } else if (layer === 'info') {
+                document.getElementById('layer2').style.transform = 'scale(1.02)';
+                document.getElementById('layer2').style.backgroundColor = '#fff3e0';
+            } else if (layer === 'cognitive') {
+                document.getElementById('layer3').style.transform = 'scale(1.02)';
+                document.getElementById('layer3').style.backgroundColor = '#e8f5e8';
+            }
+            
+            setTimeout(() => {
+                document.getElementById('layer1').style.transform = 'scale(1)';
+                document.getElementById('layer2').style.transform = 'scale(1)';
+                document.getElementById('layer3').style.transform = 'scale(1)';
+                document.getElementById('layer1').style.backgroundColor = '';
+                document.getElementById('layer2').style.backgroundColor = '';
+                document.getElementById('layer3').style.backgroundColor = '';
+            }, 500);
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            resetSimulation();
+            
+            // Auto-run every 10 seconds
+            setInterval(runSimulation, 10000);
+        };
+    </script>
+</body>
+</html>
